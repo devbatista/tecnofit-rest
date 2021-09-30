@@ -4,17 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PersonalRecord;
+use App\Models\Movement;
 
 class RankingController extends Controller
 {
-    public function listRanking(Request $request, PersonalRecord $personalRecord) {
+    public function listRanking(Request $request, PersonalRecord $personalRecord, Movement $movements) {
         $dados = ['error' => false];
         $movement_id = $request->input('movement_id');
 
-        $records = $personalRecord->getRanking($movement_id);
-
-        // Verifica se houve retorno de dados
-        if(!$records->count()) {
+        $movement = $movements->where('id', $movement_id)->select('name')->first();
+        // Verifica se é um movimento existente
+        if(!$movement) {
             $dados = [
                 'error' => true,
                 'msg' => 'Movimento inexistente'
@@ -22,8 +22,19 @@ class RankingController extends Controller
             return $dados;
         }
 
+        $records = $personalRecord->getRanking($movement_id);
+        // Verifica se houve retorno de dados do personal_record
+        if(!$records->count()) {
+            $dados = [
+                'error' => true,
+                'msg' => 'Não há dados sobre esse movimento',
+                'movement' => $movement
+            ];
+            return $dados;
+        }
+
         // Pega o nome do movimento
-        $ranking = ['movement' => $records[0]->movement];
+        $ranking = ['movement' => $movement->name];
 
         // Organiza o ranking de acordo com os valores
         $posicao = 0;
