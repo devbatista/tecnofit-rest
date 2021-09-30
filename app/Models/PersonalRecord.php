@@ -15,8 +15,7 @@ class PersonalRecord extends Model
 
     public function getRanking($movement_id) {
         $retorno = DB::table('personal_record as p')
-            ->select('u.name as name', 'p.value', 'm.name as movement', 'p.date')
-            ->join('movement as m', 'p.movement_id', '=', 'm.id')
+            ->select('u.name as name', 'p.value', 'p.date')
             ->join('user as u', 'p.user_id', '=', 'u.id')
             ->where('movement_id', $movement_id)
             ->orderByDesc('value')

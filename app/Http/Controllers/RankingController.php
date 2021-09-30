@@ -11,6 +11,10 @@ class RankingController extends Controller
     public function listRanking(Request $request, PersonalRecord $personalRecord, Movement $movements) {
         $dados = ['error' => false];
         $movement_id = $request->input('movement_id');
+        if(!$movement_id) {
+            $dados = ['error' => true, 'msg' => 'Envie o movimento corretamente'];
+            return $dados;
+        }
 
         $movement = $movements->where('id', $movement_id)->select('name')->first();
         // Verifica se é um movimento existente
